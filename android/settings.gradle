@@ -1,0 +1,4 @@
+include ':CryptoLib'
+include ':CvLib'
+include ':sample'
+rootProject.name = "BreezeKit"

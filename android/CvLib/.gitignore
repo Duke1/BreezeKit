@@ -1,0 +1,10 @@
+.svn
+bin
+gen
+.gradle
+.DS_Store
+/build
+/obj
+*.iml
+.externalNativeBuild
+.cxx
