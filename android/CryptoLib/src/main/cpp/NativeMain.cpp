@@ -111,7 +111,7 @@ void *stack_blur(JNIEnv *env, jclass clzz, jobject bitmapOut, jint radius, jint 
                                             return -1;\
                                         }\
 
-const char *className = "com/qfleng/cryptokit/NativeHelper";
+const char *className = "com/qfleng/cryptokit/CryptoHelper";
 
 static JNINativeMethod methods[] = {
         {"sslVersion", "()Ljava/lang/String;",                                                      (void *) sslVersion},
@@ -121,7 +121,7 @@ static JNINativeMethod methods[] = {
         {"fileSha1",   "(Ljava/lang/String;)Ljava/lang/String;",                                    (void *) fileSha1},
         {"unZip",      "(Ljava/lang/String;Ljava/lang/String;)Z",                                   (void *) unZip},
         {"unZip",      "(Landroid/content/res/AssetManager;Ljava/lang/String;Ljava/lang/String;)Z", (void *) unAssetZip},
-        {"stack_blur", "(Landroid/graphics/Bitmap;III)V",                                           (void *) stack_blur}
+        {"stackBlur", "(Landroid/graphics/Bitmap;III)V",                                           (void *) stack_blur}
 };
 
 
@@ -129,7 +129,6 @@ jint JNI_OnLoad(JavaVM *vm, void *reserved) {
 
     jclass clazz = NULL;
     JNIEnv *env = NULL;
-
     if (vm->GetEnv((void **) &env, JNI_VERSION_1_6) != JNI_OK) {
         LOGE("JNI_OnLoad->GetEnv error!");
         return -1;

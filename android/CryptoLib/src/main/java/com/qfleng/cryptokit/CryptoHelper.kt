@@ -1,9 +1,10 @@
 package com.qfleng.cryptokit
 
 import android.content.res.AssetManager
+import android.graphics.Bitmap
 
 
-object NativeHelper {
+object CryptoHelper {
     init {
         System.loadLibrary("c++_shared")
         System.loadLibrary("au_crypto_kit")
@@ -24,4 +25,6 @@ object NativeHelper {
     external fun unZip(fileName: String, outDir: String): Boolean
 
     external fun unZip(assetManager: AssetManager, fileName: String, outDir: String): Boolean
+
+    external fun stackBlur(bitmap: Bitmap, radius: Int, threadCount: Int, threadIndex: Int)
 }
