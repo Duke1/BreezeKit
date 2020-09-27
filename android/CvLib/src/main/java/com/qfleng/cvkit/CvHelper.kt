@@ -118,6 +118,24 @@ object CvHelper {
         )
     }
 
+    @JvmOverloads
+    fun repair(
+        src: Mat?,
+        thresh: Double = 235.0,
+        mask: Mat? = null,
+        maskPositions: IntArray = intArrayOf()//[startX,startY,endX,endY]
+    ) {
+        requireNotNull(src) { "src mat == null" }
+
+        nRepair(
+            src.nativeObjAddr,
+            thresh,
+            mask?.nativeObjAddr ?: 0,
+            maskPositions
+        )
+
+    }
+
     private external fun nCvVersion(): String
 
     private external fun nBitmapToMat2(b: Bitmap, m_addr: Long, unPremultiplyAlpha: Boolean)
@@ -137,6 +155,13 @@ object CvHelper {
     private external fun nAdaptiveThreshold(src_addr: Long, blockSize: Int, C: Double): Long
 
     private external fun nRotation(src_addr: Long, angle: Int): Long
+
+    private external fun nRepair(
+        src_addr: Long,
+        thresh: Double,
+        mask_addr: Long,
+        maskPositions: IntArray
+    )
 
 
 }

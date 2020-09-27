@@ -1,11 +1,5 @@
 
-#include "opencv2/core.hpp"
-#include <opencv2/opencv.hpp>
-#include "opencv2/imgproc.hpp"
-#include <android/bitmap.h>
-
-#include "../../../../CryptoLib/src/main/cpp/Base.h"
-#include <string>
+#include "CvHelper.h"
 
 using namespace cv;
 
@@ -195,7 +189,11 @@ JNIEXPORT jlong JNICALL Java_com_qfleng_cvkit_CvHelper_nThreshold
 
     Mat *result = new Mat();
 
-    cvtColor(input_image, *result, COLOR_BGR2GRAY);
+    if (CV_8UC4 == input_image.type()) {
+        cvtColor(input_image, *result, COLOR_BGR2GRAY);
+    } else {
+        input_image.copyTo(*result);
+    }
 
     threshold(*result, *result, thresh, 255.0, THRESH_BINARY);
 
@@ -208,7 +206,11 @@ JNIEXPORT jlong JNICALL Java_com_qfleng_cvkit_CvHelper_nAdaptiveThreshold
 
     Mat *result = new Mat();
 
-    cvtColor(input_image, *result, COLOR_BGR2GRAY);
+    if (CV_8UC4 == input_image.type()) {
+        cvtColor(input_image, *result, COLOR_BGR2GRAY);
+    } else {
+        input_image.copyTo(*result);
+    }
 
     adaptiveThreshold(*result, *result, 255.0, ADAPTIVE_THRESH_GAUSSIAN_C, THRESH_BINARY, blockSize,
                       C);
@@ -237,6 +239,57 @@ JNIEXPORT jlong JNICALL Java_com_qfleng_cvkit_CvHelper_nRotation
 
 
     return (jlong) dst;
+}
+
+
+JNIEXPORT void JNICALL Java_com_qfleng_cvkit_CvHelper_nRepair
+        (JNIEnv *env, jclass, jlong src_addr, jdouble thresh, jlong mask_addr,
+         jintArray maskPositions) {
+
+    Mat &src = *((Mat *) src_addr);
+    Mat target;
+
+    //[startX,startY,endX,endY]
+    std::vector<int> maskPVector = CvHelper::convertJintArrayToVector(env, maskPositions);
+    //有坐标数组时，按区域修复；没有，则为全图修复
+    if (4 == maskPVector.size()) {
+        Point pStart = Point(maskPVector[0], maskPVector[1]);
+        Point pEnd = Point(maskPVector[2], maskPVector[3]);
+
+        rectangle(src, pStart, pEnd, Scalar(255, 0, 0), LINE_8, 0);
+
+        target = src(Rect(pStart, pEnd));
+    } else {
+        target = src;
+    }
+
+    Mat *imageMask;
+    if (0 == mask_addr) {
+        imageMask = new Mat(target.size(), CV_8UC1, Scalar::all(0));
+    } else {
+        imageMask = ((Mat *) mask_addr);
+    }
+
+    Mat imageGray;
+    //转换为灰度图
+    if (CV_8UC1 == target.type()) {
+        imageGray = target.clone();
+    } else {
+        cvtColor(target, imageGray, COLOR_RGB2GRAY, 0);
+    }
+
+    //通过阈值处理生成Mask。修复区纯白，thresh建议值：235
+    threshold(imageGray, *imageMask, thresh, 255, THRESH_BINARY);
+    Mat Kernel = getStructuringElement(MORPH_RECT, Size(3, 3));
+    //对Mask膨胀处理，增加Mask面积
+    dilate(*imageMask, *imageMask, Kernel);
+
+    inpaint(target, *imageMask, target, 5, INPAINT_TELEA);
+
+
+    if (0 == mask_addr)
+        imageMask->release();
+
 }
 
 

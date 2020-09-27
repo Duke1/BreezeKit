@@ -1,13 +1,35 @@
 package com.qfleng.sample
 
+import android.content.DialogInterface
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
-import com.qfleng.breezekit.R
+import android.view.View
+import androidx.appcompat.app.AlertDialog
 import com.qfleng.cryptokit.CryptoHelper
 import com.qfleng.cvkit.CvHelper
 import kotlinx.android.synthetic.main.activity_main.*
 import java.lang.StringBuilder
+
+fun AppCompatActivity.showDialog(
+    inView: View,
+    title: String,
+    okClickListener: (DialogInterface, View) -> Unit?
+) {
+    AlertDialog.Builder(this)
+        .setTitle(title)
+        .setIcon(android.R.drawable.ic_dialog_info)
+        .setView(inView)
+        .setPositiveButton(
+            "OK"
+        ) { dialog, which ->
+            okClickListener(dialog, inView)
+        }
+        .setNegativeButton("CANCEL", null)
+        .show()
+}
+
 
 class MainActivity : AppCompatActivity() {
     val handler = Handler()
@@ -20,5 +42,11 @@ class MainActivity : AppCompatActivity() {
         sBuilder.append("cv_:${CvHelper.getVersion()}")
         sBuilder.append("\ncrypto_:${CryptoHelper.sslVersion()}")
         txtView.text = sBuilder.toString()
+
+        btnCv.setOnClickListener {
+
+            val intent = Intent(this, CameraActivity::class.java)
+            this.startActivity(intent)
+        }
     }
 }
