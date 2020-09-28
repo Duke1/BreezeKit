@@ -206,10 +206,10 @@ JNIEXPORT jlong JNICALL Java_com_qfleng_cvkit_CvHelper_nAdaptiveThreshold
 
     Mat *result = new Mat();
 
-    if (CV_8UC4 == input_image.type()) {
-        cvtColor(input_image, *result, COLOR_BGR2GRAY);
-    } else {
+    if (CV_8UC1 == input_image.type()) {
         input_image.copyTo(*result);
+    } else {
+        cvtColor(input_image, *result, COLOR_BGR2GRAY);
     }
 
     adaptiveThreshold(*result, *result, 255.0, ADAPTIVE_THRESH_GAUSSIAN_C, THRESH_BINARY, blockSize,
