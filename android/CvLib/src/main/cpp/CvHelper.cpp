@@ -255,8 +255,7 @@ JNIEXPORT void JNICALL Java_com_qfleng_cvkit_CvHelper_nRepair
     if (4 == maskPVector.size()) {
         Point pStart = Point(maskPVector[0], maskPVector[1]);
         Point pEnd = Point(maskPVector[2], maskPVector[3]);
-
-        rectangle(src, pStart, pEnd, Scalar(255, 0, 0), LINE_8, 0);
+        //rectangle(src, pStart, pEnd, Scalar(255, 0, 0), LINE_8, 0);
 
         target = src(Rect(pStart, pEnd));
     } else {
