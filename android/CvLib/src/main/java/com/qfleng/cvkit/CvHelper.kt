@@ -136,6 +136,17 @@ object CvHelper {
 
     }
 
+    @JvmOverloads
+    fun modifyLightness(
+        src: Mat?,
+        lightnessAddtion: Int
+    ) {
+        requireNotNull(src) { "src mat == null" }
+
+        nModifyLightness(src.nativeObjAddr, lightnessAddtion)
+
+    }
+
     private external fun nCvVersion(): String
 
     private external fun nBitmapToMat2(b: Bitmap, m_addr: Long, unPremultiplyAlpha: Boolean)
@@ -163,5 +174,9 @@ object CvHelper {
         maskPositions: IntArray
     )
 
+    private external fun nModifyLightness(
+        src_addr: Long,
+        lightnessAddtion: Int
+    )
 
 }

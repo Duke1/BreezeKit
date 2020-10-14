@@ -255,7 +255,7 @@ JNIEXPORT void JNICALL Java_com_qfleng_cvkit_CvHelper_nRepair
     if (4 == maskPVector.size()) {
         Point pStart = Point(maskPVector[0], maskPVector[1]);
         Point pEnd = Point(maskPVector[2], maskPVector[3]);
-        //rectangle(src, pStart, pEnd, Scalar(255, 0, 0), LINE_8, 0);
+        rectangle(src, pStart, pEnd, Scalar(255, 0, 0), LINE_8, 0);
 
         target = src(Rect(pStart, pEnd));
     } else {
@@ -274,7 +274,7 @@ JNIEXPORT void JNICALL Java_com_qfleng_cvkit_CvHelper_nRepair
     if (CV_8UC1 == target.type()) {
         imageGray = target.clone();
     } else {
-        cvtColor(target, imageGray, COLOR_RGB2GRAY, 0);
+        cvtColor(target, imageGray, COLOR_BGR2GRAY, 0);
     }
 
     //通过阈值处理生成Mask。修复区纯白，thresh建议值：235
@@ -291,6 +291,33 @@ JNIEXPORT void JNICALL Java_com_qfleng_cvkit_CvHelper_nRepair
 
 }
 
+
+/**
+ * 亮度调整
+ * @param env
+ * @param src_addr
+ * @param lightnessAddtion
+ * @return
+ */
+JNIEXPORT void JNICALL
+Java_com_qfleng_cvkit_CvHelper_nModifyLightness(JNIEnv *env, jclass, jlong src_addr,
+                                                jint lightnessAddtion) {
+    Mat &input_image = *((Mat *) src_addr);
+    double alpha = 1.0;
+//速度慢
+//    for (int y = 0; y < input_image.rows; y++) {
+//        for (int x = 0; x < input_image.cols; x++) {
+//            for (int c = 0; c < 3; c++) {
+//                input_image.at<Vec3b>(y, x)[c] = saturate_cast<uchar>(
+//                        alpha * (input_image.at<Vec3b>(y, x)[c]) + lightnessAddtion);
+//            }
+//        }
+//    }
+
+
+    input_image.convertTo(input_image, -1, alpha, lightnessAddtion);
+
+}
 
 } // extern "C"
 

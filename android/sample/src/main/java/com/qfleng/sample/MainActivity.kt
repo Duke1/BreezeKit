@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
 import android.view.View
+import androidx.annotation.IdRes
 import androidx.appcompat.app.AlertDialog
 import com.qfleng.cryptokit.CryptoHelper
 import com.qfleng.cvkit.CvHelper
@@ -28,6 +29,9 @@ fun AppCompatActivity.showDialog(
         }
         .setNegativeButton("CANCEL", null)
         .show()
+}
+fun <T : View> AppCompatActivity.bindView(@IdRes res: Int): Lazy<T> {
+    return lazy { findViewById<T>(res) }
 }
 
 

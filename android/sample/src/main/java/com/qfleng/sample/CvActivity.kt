@@ -3,16 +3,24 @@ package com.qfleng.sample
 import androidx.appcompat.app.AppCompatActivity
 import android.graphics.Bitmap
 import android.os.Bundle
+import android.os.Handler
+import android.os.Message
 import android.text.method.ScrollingMovementMethod
 import android.view.inputmethod.EditorInfo
 import android.widget.Button
+import android.widget.RadioGroup
 import androidx.appcompat.widget.AppCompatEditText
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.*
+
 import com.qfleng.cvkit.CvHelper
 import com.qfleng.cvkit.cv.Imgproc
 import com.qfleng.cvkit.cv.Mat
 import com.qfleng.sample.util.RxHelper
 import com.qfleng.sample.util.RxObserver
 import com.qfleng.sample.util.fullScreen
+import com.xw.repo.BubbleSeekBar
 import kotlinx.android.synthetic.main.activity_cv.*
 
 /**
@@ -26,6 +34,14 @@ class CvActivity : AppCompatActivity() {
     private var curDisplayMat1: Mat? = null
     private var curDisplayMat2: Mat? = null
     private val _lock = Object()
+
+    val viewModel by lazy(LazyThreadSafetyMode.SYNCHRONIZED) {
+        ViewModelProvider(this).get(CameraViewModel::class.java)
+    }
+
+    var lightnessAddtion = 0
+    val contrastBarView by bindView<BubbleSeekBar>(R.id.contrastBarView)
+    val lightnessBarView by bindView<BubbleSeekBar>(R.id.lightnessBarView)
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -85,6 +101,76 @@ class CvActivity : AppCompatActivity() {
 
             }
 
+        }
+
+
+        lightnessBarView.setProgress(0f)
+        lightnessBarView.onProgressChangedListener =
+            object : BubbleSeekBar.OnProgressChangedListener {
+                override fun onProgressChanged(
+                    bubbleSeekBar: BubbleSeekBar,
+                    progress: Int,
+                    progressFloat: Float,
+                    fromUser: Boolean
+                ) {
+                    lightnessAddtion = progress
+
+                    val modifyMat = suspend {
+                        val src = cameraShare.image!!.clone()
+                        CvHelper.modifyLightness(src, lightnessAddtion)
+                        src
+                    }
+
+                    viewModel.viewModelScope.launch(Dispatchers.Main) {
+
+                        val mat = withContext(Dispatchers.IO) {
+                            modifyMat()
+                        }
+
+                        setDisplayMat2(mat)
+                    }
+                }
+
+                override fun getProgressOnActionUp(
+                    bubbleSeekBar: BubbleSeekBar,
+                    progress: Int,
+                    progressFloat: Float
+                ) {
+                }
+
+                override fun getProgressOnFinally(
+                    bubbleSeekBar: BubbleSeekBar,
+                    progress: Int,
+                    progressFloat: Float,
+                    fromUser: Boolean
+                ) {
+                }
+            }
+        contrastBarView.setProgress(0f)
+        contrastBarView.onProgressChangedListener = object :
+            BubbleSeekBar.OnProgressChangedListener {
+            override fun onProgressChanged(
+                bubbleSeekBar: BubbleSeekBar,
+                progress: Int,
+                progressFloat: Float,
+                fromUser: Boolean
+            ) {
+            }
+
+            override fun getProgressOnActionUp(
+                bubbleSeekBar: BubbleSeekBar,
+                progress: Int,
+                progressFloat: Float
+            ) {
+            }
+
+            override fun getProgressOnFinally(
+                bubbleSeekBar: BubbleSeekBar,
+                progress: Int,
+                progressFloat: Float,
+                fromUser: Boolean
+            ) {
+            }
         }
     }
 

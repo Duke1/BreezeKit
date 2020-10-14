@@ -36,18 +36,91 @@
     </androidx.appcompat.widget.LinearLayoutCompat>
 
 
-    <com.google.android.flexbox.FlexboxLayout
-        android:id="@+id/cvFunBoardView"
+    <ScrollView
+        android:id="@+id/cvFunScrollView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:layout_marginBottom="10dp"
-        app:alignContent="stretch"
-        app:alignItems="stretch"
-        app:flexWrap="wrap"
+        android:maxHeight="300dp"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageViewLayout" />
+        app:layout_constraintTop_toBottomOf="@+id/imageViewLayout">
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <com.google.android.flexbox.FlexboxLayout
+                android:id="@+id/cvFunBoardView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
+                app:alignContent="stretch"
+                app:alignItems="stretch"
+                app:flexWrap="wrap" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="70dp"
+                    android:layout_height="wrap_content"
+                    android:gravity="right"
+                    android:text="亮度补偿" />
+
+
+                <com.xw.repo.BubbleSeekBar
+                    android:id="@+id/lightnessBarView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:bsb_auto_adjust_section_mark="true"
+                    app:bsb_bubble_color="@color/bubbleseekbar"
+                    app:bsb_bubble_text_color="@color/colorPrimaryDark"
+                    app:bsb_bubble_text_size="10sp"
+                    app:bsb_max="100"
+                    app:bsb_min="-100"
+                    app:bsb_second_track_color="@color/bubbleseekbar"
+                    app:bsb_section_text_position="sides"
+                    app:bsb_show_section_mark="true"
+                    app:bsb_show_section_text="true"
+                    app:bsb_show_thumb_text="true"
+                    app:bsb_track_color="@color/bubbleseekbar" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="70dp"
+                    android:layout_height="wrap_content"
+                    android:gravity="right"
+                    android:text="对比度" />
+
+                <com.xw.repo.BubbleSeekBar
+                    android:id="@+id/contrastBarView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:bsb_auto_adjust_section_mark="true"
+                    app:bsb_bubble_color="@color/bubbleseekbar"
+                    app:bsb_bubble_text_color="@color/colorPrimaryDark"
+                    app:bsb_bubble_text_size="10sp"
+                    app:bsb_max="100"
+                    app:bsb_min="-100"
+                    app:bsb_second_track_color="@color/bubbleseekbar"
+                    app:bsb_section_text_position="sides"
+                    app:bsb_show_section_mark="true"
+                    app:bsb_show_section_text="true"
+                    app:bsb_show_thumb_text="true"
+                    app:bsb_track_color="@color/bubbleseekbar" />
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
 
     <TextView
         android:id="@+id/logoLabelView"
@@ -58,7 +131,7 @@
         android:textSize="12dp"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/cvFunBoardView" />
+        app:layout_constraintTop_toBottomOf="@+id/cvFunScrollView" />
 
     <TextView
         android:id="@+id/logView"
