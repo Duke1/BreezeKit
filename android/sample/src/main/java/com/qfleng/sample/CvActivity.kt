@@ -103,6 +103,32 @@ class CvActivity : AppCompatActivity() {
 
         }
 
+        addFunBtn("模糊") {
+            setDisplayMat1(cameraShare.image!!.clone())
+
+            val threshEt = AppCompatEditText(this)
+            threshEt.hint = "模糊次数："
+            threshEt.inputType = EditorInfo.TYPE_CLASS_NUMBER
+            threshEt.setText("1")
+            threshEt.requestFocus()
+            showDialog(threshEt, "阈值") { dialog, view ->
+                val thresh = threshEt.text.toString().toInt()
+                dialog.dismiss()
+
+                RxHelper.doIt({
+                    val mat = curDisplayMat1!!.clone()
+
+                    for (i in 0 until thresh)
+                        CvHelper.blur(mat, 25)
+
+                    mat
+                }, RxObserver(next = {
+                    setDisplayMat2(it)
+                }))
+
+            }
+        }
+
 
         lightnessBarView.setProgress(0f)
         lightnessBarView.onProgressChangedListener =

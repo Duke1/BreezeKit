@@ -175,11 +175,14 @@ JNIEXPORT jlong JNICALL Java_com_qfleng_cvkit_CvHelper_nCreateMat
         (JNIEnv *env, jclass, jstring strData) {
     const char *data = env->GetStringUTFChars(strData, 0);
 
-    Mat mat = imread(data, IMREAD_ANYCOLOR);
+    Mat mat = imread(data, IMREAD_UNCHANGED);
 
     env->ReleaseStringUTFChars(strData, data);
     Mat *result = new Mat(mat);
 
+
+    LOGI("CvHelper_nCreateMat ==> type:%d ,CV_8UC4:%d ,CV_8UC3:%d", result->type(), CV_8UC4,
+         CV_8UC3);
     return (jlong) result;
 }
 
@@ -255,7 +258,8 @@ JNIEXPORT void JNICALL Java_com_qfleng_cvkit_CvHelper_nRepair
     if (4 == maskPVector.size()) {
         Point pStart = Point(maskPVector[0], maskPVector[1]);
         Point pEnd = Point(maskPVector[2], maskPVector[3]);
-        rectangle(src, pStart, pEnd, Scalar(255, 0, 0), LINE_8, 0);
+        //标识修复区域
+        //rectangle(src, pStart, pEnd, Scalar(255, 0, 0), LINE_8, 0);
 
         target = src(Rect(pStart, pEnd));
     } else {
@@ -302,21 +306,49 @@ JNIEXPORT void JNICALL Java_com_qfleng_cvkit_CvHelper_nRepair
 JNIEXPORT void JNICALL
 Java_com_qfleng_cvkit_CvHelper_nModifyLightness(JNIEnv *env, jclass, jlong src_addr,
                                                 jint lightnessAddtion) {
-    Mat &input_image = *((Mat *) src_addr);
+    Mat &srcMat = *((Mat *) src_addr);
     double alpha = 1.0;
-//速度慢
-//    for (int y = 0; y < input_image.rows; y++) {
-//        for (int x = 0; x < input_image.cols; x++) {
-//            for (int c = 0; c < 3; c++) {
-//                input_image.at<Vec3b>(y, x)[c] = saturate_cast<uchar>(
-//                        alpha * (input_image.at<Vec3b>(y, x)[c]) + lightnessAddtion);
+
+    //方法1
+    //速度慢
+//    for (int y = 0; y < srcMat.rows; y++) {
+//        for (int x = 0; x < srcMat.cols; x++) {
+//            Vec4b point = srcMat.at<Vec4b>(y, x);
+//            if (0 == point[3]) {
+//                srcMat.at<Vec4b>(y, x) = Vec4b(255, 0, 0, 255);
+//                continue;
+//            }
+//            for (int c = 0; c < 4; c++) {
+//                uchar pv = saturate_cast<uchar>(alpha * (point[c]) + lightnessAddtion);
+//                srcMat.at<Vec4b>(y, x)[c] = pv;
 //            }
 //        }
 //    }
 
+    //方法2
+    srcMat.convertTo(srcMat, -1, alpha, lightnessAddtion);
 
-    input_image.convertTo(input_image, -1, alpha, lightnessAddtion);
+}
 
+
+JNIEXPORT void JNICALL
+Java_com_qfleng_cvkit_CvHelper_nBlur(JNIEnv *env, jclass, jlong src_addr, jint size) {
+    Mat &input_image = *((Mat *) src_addr);
+
+    GaussianBlur(input_image, input_image, Size(size, size), 0);
+
+}
+
+
+JNIEXPORT void JNICALL
+Java_com_qfleng_cvkit_CvHelper_nAddWeighted(JNIEnv *env, jclass, jlong src1_addr, jdouble alpha,
+                                            jlong src2_addr, jdouble beta, jdouble gamma,
+                                            jlong dst_addr, jint dtype) {
+    Mat &input_image1 = *((Mat *) src1_addr);
+    Mat &input_image2 = *((Mat *) src2_addr);
+    Mat &dst = *((Mat *) dst_addr);
+
+    addWeighted(input_image1, alpha, input_image2, beta, gamma, dst, dtype);
 }
 
 } // extern "C"

@@ -119,6 +119,14 @@ object CvHelper {
     }
 
     @JvmOverloads
+    fun blur(src: Mat?, size: Int) {
+        requireNotNull(src) { "src mat == null" }
+
+        nBlur(src.nativeObjAddr, size)
+    }
+
+
+    @JvmOverloads
     fun repair(
         src: Mat?,
         thresh: Double = 235.0,
@@ -147,6 +155,28 @@ object CvHelper {
 
     }
 
+    @JvmOverloads
+    fun addWeighted(
+        src1: Mat, alpha: Double,
+        src2: Mat, beta: Double, gamma: Double,
+        dst: Mat, dtype: Int = -1
+    ) {
+        requireNotNull(src1) { "src1 mat == null" }
+        requireNotNull(src2) { "src2 mat == null" }
+        requireNotNull(dst) { "dst mat == null" }
+
+        nAddWeighted(
+            src1.nativeObjAddr,
+            alpha,
+            src2.nativeObjAddr,
+            beta,
+            gamma,
+            dst.nativeObjAddr,
+            dtype
+        )
+
+    }
+
     private external fun nCvVersion(): String
 
     private external fun nBitmapToMat2(b: Bitmap, m_addr: Long, unPremultiplyAlpha: Boolean)
@@ -167,6 +197,8 @@ object CvHelper {
 
     private external fun nRotation(src_addr: Long, angle: Int): Long
 
+    private external fun nBlur(src_addr: Long, size: Int)
+
     private external fun nRepair(
         src_addr: Long,
         thresh: Double,
@@ -179,4 +211,9 @@ object CvHelper {
         lightnessAddtion: Int
     )
 
+    private external fun nAddWeighted(
+        src1_addr: Long, alpha: Double,
+        src2_addr: Long, beta: Double, gamma: Double,
+        dst_addr: Long, dtype: Int
+    )
 }
